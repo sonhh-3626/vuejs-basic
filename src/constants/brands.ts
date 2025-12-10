@@ -1,150 +1,214 @@
-export const brands = [
-  "Dell",
-  "Amazon",
-  "Apple",
-  "Google",
-  "Roku",
-  "Sony",
-  "HP",
-  "Lenovo",
-  "Harman/kardon",
-  "Insignia™",
-  "SanDisk",
-  "GoPro",
-  "Sanus",
-  "NETGEAR",
-  "Beats by Dr. Dre",
-  "Kicker",
-  "Samsung",
-  "Microsoft",
-  "Hammermill",
-  "Minecraft",
-  "Acer",
-  "AT&T GoPhone",
-  "Philips",
-  "JVC",
-  "Bose®",
-  "Skullcandy",
-  "Epson",
-  "Energizer",
-  "Boost Mobile",
-  "BLU",
-  "Cricket Wireless",
-  "Arlo",
-  "Belkin",
-  "AOC",
-  "Linksys",
-  "Westinghouse",
-  "Verizon Prepaid",
-  "Duracell",
-  "D-Link",
-  "Rocketfish",
-  "Brother",
-  "Rayovac",
-  "Starbucks",
-  "Simple Mobile",
-  "SONOS",
-  "Ring",
-  "XFINITY",
-  "LG",
-  "Hisense",
-  "Rocketfish™",
-  "Canon",
-  "Verizon Wireless Prepaid",
-  "Polk Audio",
-  "Toshiba",
-  "Philips Norelco",
-  "Panasonic",
-  "ARRIS",
-  "Whalen Furniture",
-  "Corsair",
-  "iRobot",
-  "J!NX",
-  "Shark",
-  "Nikon",
-  "Nest",
-  "Spotify",
-  "Jabra",
-  "Pioneer",
-  "Plantronics",
-  "AT&T",
-  "Onkyo",
-  "Asus",
-  "Pokemon",
-  "Altec Lansing",
-  "Motorola",
-  "Klipsch",
-  "VTech",
-  "VIZIO",
-  "Keurig",
-  "Nintendo",
-  "MagicJack",
-  "MSI",
-  "Jam",
-  "BISSELL",
-  "PNY",
-  "Virgin Mobile",
-  "iHome",
-  "Oster",
-  "JBL",
-  "EVGA",
-  "Alienware",
-  "Chefman",
-  "Dynex™",
-  "j5 create",
-  "Darden Restaurants",
-  "Thermaltake",
-  "TracFone",
-  "Texas Instruments",
-  "LIFX",
-  "Fitbit",
-  "JayBird",
-  "ReTrak",
-  "Olympus",
-  "Pokémon",
-  "SiriusXM",
-  "Kodak",
-  "Metra",
-  "Magic Bullet",
-  "Fujifilm",
-  "Harman Kardon",
-  "PBS Kids",
-  "Square",
-  "Lutron",
-  "Whirlpool",
-  "GermGuardian",
-  "Panther Vision",
-  "Alcatel",
-  "Denon",
-  "Crane",
-  "Yamaha",
-  "HMDX",
-  "Canary",
-  "Kenwood",
-  "Case Logic",
-  "Sharp",
-  "Hoover",
-  "Ultimate Ears",
-  "Wahl",
-  "Applebee's",
-  "Beats",
-  "Wendy's",
-  "Huawei",
-  "ilumi",
-  "Dyson",
-  "Piggyback",
-  "Honeywell",
-  "Ninja",
-  "JAM",
-  "Anova",
-  "CyberPowerPC",
-  "Texas Roadhouse",
-  "Frigidaire",
-  "Memorex",
-  "Gaming Heads",
-  "Jitterbug",
-  "eero",
-  "iBUYPOWER",
-  "Oculus",
-  "Actiontec"
+import type { Brands } from "@/shared/types/Brand";
+
+export const brands: Brands[] = [
+  {
+    "id": 0,
+    "title": "Acer",
+    "count": 2,
+    "categoryId": 6
+  },
+  {
+    "id": 1,
+    "title": "Alienware",
+    "count": 1,
+    "categoryId": 6
+  },
+  {
+    "id": 2,
+    "title": "Amazon",
+    "count": 6,
+    "categoryId": 9
+  },
+  {
+    "id": 3,
+    "title": "Apple",
+    "count": 35,
+    "categoryId": 7
+  },
+  {
+    "id": 4,
+    "title": "Applebee's",
+    "count": 1,
+    "categoryId": 5
+  },
+  {
+    "id": 5,
+    "title": "Arlo",
+    "count": 4,
+    "categoryId": 9
+  },
+  {
+    "id": 6,
+    "title": "Asus",
+    "count": 12,
+    "categoryId": 6
+  },
+  {
+    "id": 7,
+    "title": "Beats",
+    "count": 2,
+    "categoryId": 8
+  },
+  {
+    "id": 8,
+    "title": "Beats by Dr. Dre",
+    "count": 7,
+    "categoryId": 8
+  },
+  {
+    "id": 9,
+    "title": "Bose\u00ae",
+    "count": 10,
+    "categoryId": 8
+  },
+  {
+    "id": 10,
+    "title": "CyberPowerPC",
+    "count": 1,
+    "categoryId": 6
+  },
+  {
+    "id": 11,
+    "title": "Dell",
+    "count": 11,
+    "categoryId": 6
+  },
+  {
+    "id": 12,
+    "title": "Google",
+    "count": 3,
+    "categoryId": 7
+  },
+  {
+    "id": 13,
+    "title": "HP",
+    "count": 47,
+    "categoryId": 6
+  },
+  {
+    "id": 14,
+    "title": "Honeywell",
+    "count": 2,
+    "categoryId": 9
+  },
+  {
+    "id": 15,
+    "title": "Huawei",
+    "count": 1,
+    "categoryId": 7
+  },
+  {
+    "id": 16,
+    "title": "JBL",
+    "count": 5,
+    "categoryId": 8
+  },
+  {
+    "id": 17,
+    "title": "Klipsch",
+    "count": 6,
+    "categoryId": 8
+  },
+  {
+    "id": 18,
+    "title": "Lenovo",
+    "count": 16,
+    "categoryId": 6
+  },
+  {
+    "id": 19,
+    "title": "Lutron",
+    "count": 1,
+    "categoryId": 9
+  },
+  {
+    "id": 20,
+    "title": "MSI",
+    "count": 1,
+    "categoryId": 6
+  },
+  {
+    "id": 21,
+    "title": "Motorola",
+    "count": 4,
+    "categoryId": 7
+  },
+  {
+    "id": 22,
+    "title": "Nest",
+    "count": 3,
+    "categoryId": 9
+  },
+  {
+    "id": 23,
+    "title": "Ninja",
+    "count": 2,
+    "categoryId": 2
+  },
+  {
+    "id": 24,
+    "title": "Ring",
+    "count": 5,
+    "categoryId": 9
+  },
+  {
+    "id": 25,
+    "title": "Samsung",
+    "count": 57,
+    "categoryId": 7
+  },
+  {
+    "id": 26,
+    "title": "Shark",
+    "count": 5,
+    "categoryId": 2
+  },
+  {
+    "id": 27,
+    "title": "Skullcandy",
+    "count": 13,
+    "categoryId": 8
+  },
+  {
+    "id": 28,
+    "title": "Sony",
+    "count": 48,
+    "categoryId": 8
+  },
+  {
+    "id": 29,
+    "title": "Starbucks",
+    "count": 1,
+    "categoryId": 5
+  },
+  {
+    "id": 30,
+    "title": "Toshiba",
+    "count": 2,
+    "categoryId": 6
+  },
+  {
+    "id": 31,
+    "title": "Wendy's",
+    "count": 1,
+    "categoryId": 5
+  },
+  {
+    "id": 32,
+    "title": "iBUYPOWER",
+    "count": 1,
+    "categoryId": 6
+  },
+  {
+    "id": 33,
+    "title": "iRobot",
+    "count": 2,
+    "categoryId": 2
+  },
+  {
+    "id": 34,
+    "title": "ilumi",
+    "count": 1,
+    "categoryId": 9
+  }
 ]
