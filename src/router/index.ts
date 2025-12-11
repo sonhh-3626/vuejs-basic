@@ -11,12 +11,15 @@ const router = createRouter({
   routes
 })
 
-router.isReady().then(() => {
+router.isReady().then(async () => {
   const productStore = useProductStore()
   const queryTerm = router.currentRoute.value.query.query as string
 
   if (queryTerm) {
     productStore.setSearchTerm(queryTerm)
+  }
+  if (!productStore.products.length) {
+    await productStore.fetchProducts()
   }
 })
 

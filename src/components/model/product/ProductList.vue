@@ -21,7 +21,7 @@ watch(searchTerm, () => {
 
 <template>
   <div class="max-w-6xl">
-    <div v-if="productStore.filteredProducts.length === 0"
+    <div v-if="productStore.products.length === 0"
          class="text-center py-12 col-span-full">
       <NotFound />
     </div>

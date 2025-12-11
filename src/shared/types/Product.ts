@@ -5,7 +5,7 @@ export interface Product {
   description: string;
   category: string;
   price: number;
-  rating: number;
+  "rating": number;
   image: string;
   isFreeship: boolean;
 }
