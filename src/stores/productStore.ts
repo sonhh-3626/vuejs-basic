@@ -10,7 +10,7 @@ interface ProductState {
   currentPage: number;
   totalPages: number;
 }
-
+ 
 const paginatedProducts = (currentPage: number, products: Product[]) => {
   const start = (currentPage - 1) * ITEM_PER_PAGE
   return products.slice(start, start + ITEM_PER_PAGE)
