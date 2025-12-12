@@ -2,10 +2,16 @@
 import { computed } from "vue";
 import { StarIcon } from "@heroicons/vue/24/solid";
 import type { Product } from "@/shared/types/Product";
+import { useProductStore } from "@/stores/productStore";
+import { storeToRefs } from "pinia";
+import { vHighlightSearch } from "@/composables/directives/highlight";
 
 const props = defineProps<{
   product: Product
 }>();
+
+const productStore = useProductStore()
+const { searchTerm } = storeToRefs(productStore)
 
 const fullTitle = computed(() =>
   `${props.product.brand} - ${props.product.name}`
@@ -27,7 +33,7 @@ const fullTitle = computed(() =>
         <p class="text-sm text-gray-500 mb-2">{{ product.category }}</p>
 
         <h2 class="text-base font-bold font-black mb-2 line-clamp-2">
-          {{ fullTitle }}
+          <span v-highlight-search="{ text: fullTitle, query: searchTerm }"></span>
         </h2>
 
         <p class="text-sm text-gray-600 mb-4 line-clamp-3 flex-1">
