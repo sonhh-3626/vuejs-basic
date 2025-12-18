@@ -1,21 +1,25 @@
 <script setup lang='ts'>
 import { storeToRefs } from 'pinia'
-import { watch } from 'vue';
+import { computed, watch } from 'vue';
 import ProductCard from '@/components/model/product/ProductCard.vue'
 import Pagination from '@/components/common/pagination/PaginationComponent.vue'
 import { useProductStore } from '@/stores/productStore';
 import NotFound from '@/components/common/not-found/NotFound.vue';
 
 const productStore = useProductStore()
-const { filteredProducts, searchTerm, currentPage, totalPages } = storeToRefs(productStore)
+const { searchTerm, currentPage, totalPages } = storeToRefs(productStore)
 
 const handlePageChange = (page: number) => {
   currentPage.value = page
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
+const filteredProducts = computed(() =>
+  productStore.getFilteredProducts()
+);
+
 watch(searchTerm, () => {
-  currentPage.value = 1
+  productStore.resetPagination
 })
 </script>
 

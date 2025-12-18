@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang='ts'>
 import { computed } from "vue";
 import { StarIcon } from "@heroicons/vue/24/solid";
 import type { Product } from "@/shared/types/Product";

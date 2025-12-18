@@ -1,28 +1,78 @@
-<script setup lang='ts'>
-import { ref, computed } from 'vue';
+<script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { MagnifyingGlassIcon } from '@heroicons/vue/16/solid';
-import { brands } from '@/constants/brands';
 import FilterHeader from './FilterHeader.vue';
+import { useFilterStore } from '@/stores/FilterStore';
+import { useProductStore } from '@/stores/productStore';
+import { vHighlightSearch } from '@/composables/directives/highlight';
+import { MAX_BRANDS } from '@/constants/filter';
+
+const filterStore = useFilterStore();
+const productStore = useProductStore();
+const router = useRouter();
+const route = useRoute();
 
 const searchTerm = ref('');
-const selectedBrands = ref<number[]>([]);
+const brands = computed(() => productStore.brands);
 
-const filteredBrands = computed(() => {
-  return brands
-    .filter((brand) =>
-      brand.title.toLowerCase().includes(searchTerm.value.toLowerCase())
-    )
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 8);
+const selectedBrands = computed<string[]>({
+  get: () => filterStore.selectedBrands,
+  set: filterStore.setSelectedBrands
 });
 
-const toggleBrand = (brandId: number) => {
-  const index = selectedBrands.value.indexOf(brandId);
-  if (index > -1) {
-    selectedBrands.value.splice(index, 1);
-  } else {
-    selectedBrands.value.push(brandId);
+const filteredBrands = computed(() => {
+  if (!brands.value.length) return [];
+
+  const keyword = searchTerm.value.toLowerCase();
+
+  return brands.value
+    .filter(
+      brand =>
+        !keyword || brand.title.toLowerCase().includes(keyword)
+    )
+    .slice(0, MAX_BRANDS);
+});
+
+onMounted(() => {
+  const fromUrl = route.query.brands;
+  if (!fromUrl) return;
+
+  const parsed = Array.isArray(fromUrl) ? fromUrl : [fromUrl];
+  filterStore.setSelectedBrands(parsed.filter(Boolean) as string[]);
+});
+
+watch(
+  () => selectedBrands.value,
+  brands => {
+    const query = { ...route.query };
+
+    if (brands.length) {
+      query.brands = brands;
+    } else {
+      delete query.brands;
+    }
+
+    router.replace({ query });
+  },
+  { deep: true }
+);
+
+watch(
+  () => route.query.brands,
+  value => {
+    const parsed = value
+      ? Array.isArray(value) ? value : [value]
+      : [];
+
+    filterStore.setSelectedBrands(parsed as string[]);
   }
+);
+
+const toggleBrand = (title: string) => {
+  selectedBrands.value = selectedBrands.value.includes(title)
+    ? selectedBrands.value.filter(b => b !== title)
+    : [...selectedBrands.value, title];
 };
 </script>
 
@@ -40,7 +90,11 @@ const toggleBrand = (brandId: number) => {
         />
       </div>
 
-      <div class="max-h-72 overflow-y-auto space-y-1">
+      <div v-if="filteredBrands.length === 0" class="text-center py-4 text-gray-500 text-sm">
+        No brands found
+      </div>
+
+      <div v-else class="max-h-72 overflow-y-auto space-y-1">
         <label
           v-for="brand in filteredBrands"
           :key="brand.id"
@@ -50,12 +104,14 @@ const toggleBrand = (brandId: number) => {
             <input
               type="checkbox"
               class="w-3.5 h-3.5 text-blue-600 border-gray-300 rounded focus:ring-1 focus:ring-blue-500 cursor-pointer"
-              :checked="selectedBrands.includes(brand.id)"
-              @change="toggleBrand(brand.id)"
+              :checked="selectedBrands.includes(brand.title)"
+              @change="toggleBrand(brand.title)"
             />
-            <span class="text-sm text-gray-700 truncate">{{ brand.title }}</span>
+            <span v-highlight-search="{ text: brand.title, query: searchTerm }"></span>
           </div>
-          <span class="text-xs text-gray-400 ml-2 font-medium">{{ brand.count }}</span>
+          <span class="text-xs text-gray-400 ml-2 font-medium">
+            {{ brand.count.toLocaleString() }}
+          </span>
         </label>
       </div>
     </div>

@@ -1,6 +1,6 @@
-<script setup lang="ts">
-import { ref } from "vue";
-import { ChevronDownIcon } from "@heroicons/vue/16/solid";
+<script setup lang='ts'>
+import { ref } from 'vue';
+import { ChevronDownIcon } from '@heroicons/vue/16/solid';
 
 const props = defineProps({
   options: {

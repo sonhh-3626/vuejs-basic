@@ -1,8 +1,21 @@
-import { defineStore } from 'pinia'
-import { products } from '@/constants/products'
-import type { Product } from '@/shared/types/Product'
+import { defineStore } from 'pinia';
+import { products } from '@/constants/products';
+import { categories } from '@/constants/categories';
+import type { Product } from '@/shared/types/Product';
+import type { Brand } from '@/shared/types/Brand';
+import type { Category } from '@/shared/types/Category';
+import type { FilterOptions } from '@/shared/types/FilterOptions';
 import { ITEM_PER_PAGE } from '@/constants/pagination';
 import { fetchProductsFromServer } from '@/shared/utils/fetchProductsFromServer';
+import { useFilterStore } from './FilterStore';
+import {
+  applyAllFilters,
+  applyPartialFilters,
+  calculateBrands
+} from '@/shared/utils/productFilters';
+import { calculateCategoryCounts } from '@/shared/utils/categoryHelpers';
+import { calculateRatingCounts } from '@/shared/utils/calculateRatingCounts';
+import { DEFAULT_MAX_PRICE } from '@/constants/filter';
 
 interface ProductState {
   products: Product[];
@@ -10,53 +23,179 @@ interface ProductState {
   currentPage: number;
   totalPages: number;
 }
- 
-const paginatedProducts = (currentPage: number, products: Product[]) => {
-  const start = (currentPage - 1) * ITEM_PER_PAGE
-  return products.slice(start, start + ITEM_PER_PAGE)
-}
+
+const paginateProducts = (currentPage: number, products: Product[]): Product[] => {
+  const start = (currentPage - 1) * ITEM_PER_PAGE;
+  return products.slice(start, start + ITEM_PER_PAGE);
+};
 
 export const useProductStore = defineStore('product', {
   state: (): ProductState => ({
     products: [],
     searchTerm: '',
     currentPage: 1,
-    totalPages: 1,
+    totalPages: 1
   }),
 
   getters: {
-    filteredProducts: (state): Product[] => {
-      const term = state.searchTerm.trim().toLowerCase()
-
-      const allFiltered = !term
-        ? state.products
-        : state.products.filter(product =>
-            product.name.toLowerCase().includes(term) ||
-            product.brand.toLowerCase().includes(term)
-          )
-
-      state.totalPages = Math.ceil(allFiltered.length / ITEM_PER_PAGE)
-      state.currentPage = Math.min(state.currentPage, state.totalPages)
-
-      return paginatedProducts(state.currentPage, allFiltered)
-    }
-  },
-  actions: {
-    setSearchTerm(term: string) {
-      this.searchTerm = term
-      this.currentPage = 1
+    defaultMinPrice: (state): number => {
+      if (state.products.length === 0) return 0;
+      return Math.min(...state.products.map(p => p.price));
     },
 
-    async fetchProducts() {
+    defaultMaxPrice: (state): number => {
+      if (state.products.length === 0) return DEFAULT_MAX_PRICE;
+      return Math.max(...state.products.map(p => p.price));
+    },
+
+    currentFilters(): FilterOptions {
+      const filterStore = useFilterStore();
+
+      return {
+        searchTerm: this.searchTerm,
+        selectedCategories: filterStore.selectedCategories,
+        selectedBrands: filterStore.selectedBrands,
+        priceRange: filterStore.priceRange,
+        minRating: filterStore.minRating,
+        isFreeship: filterStore.isFreeship
+      };
+    },
+
+    filteredProducts(): Product[] {
+      return applyAllFilters(
+        this.products,
+        this.currentFilters,
+        categories
+      );
+    },
+
+    minPrice(): number {
+      const filterStore = useFilterStore();
+
+      const filtered = applyPartialFilters(
+        this.products,
+        {
+          searchTerm: this.searchTerm,
+          selectedCategories: filterStore.selectedCategories
+        },
+        categories
+      );
+
+      if (filtered.length === 0) return this.defaultMinPrice;
+      return Math.min(...filtered.map(p => p.price));
+    },
+
+    maxPrice(): number {
+      const filterStore = useFilterStore();
+
+      const filtered = applyPartialFilters(
+        this.products,
+        {
+          searchTerm: this.searchTerm,
+          selectedCategories: filterStore.selectedCategories
+        },
+        categories
+      );
+
+      if (filtered.length === 0) return this.defaultMaxPrice;
+      return Math.max(...filtered.map(p => p.price));
+    },
+
+    brands(): Brand[] {
+      const filterStore = useFilterStore();
+
+      const filtered = applyPartialFilters(
+        this.products,
+        {
+          searchTerm: this.searchTerm,
+          selectedCategories: filterStore.selectedCategories,
+          priceRange: filterStore.priceRange,
+          minRating: filterStore.minRating,
+          isFreeship: filterStore.isFreeship
+        },
+        categories
+      );
+
+      return calculateBrands(filtered);
+    },
+
+    categories(): Category[] {
+      const filterStore = useFilterStore();
+
+      const filtered = applyPartialFilters(
+        this.products,
+        {
+          searchTerm: this.searchTerm,
+          selectedBrands: filterStore.selectedBrands,
+          priceRange: filterStore.priceRange,
+          minRating: filterStore.minRating,
+          isFreeship: filterStore.isFreeship
+        },
+        categories
+      );
+
+      return calculateCategoryCounts(categories, filtered);
+    },
+
+    ratings(): Array<{ stars: number; count: number }> {
+      const filterStore = useFilterStore();
+
+      const filtered = applyPartialFilters(
+        this.products,
+        {
+          searchTerm: this.searchTerm,
+          selectedCategories: filterStore.selectedCategories,
+          selectedBrands: filterStore.selectedBrands,
+          priceRange: filterStore.priceRange,
+          isFreeship: filterStore.isFreeship
+        },
+        categories
+      );
+
+      return calculateRatingCounts(filtered);
+    },
+
+    allProducts: (state): Product[] => state.products
+  },
+
+  actions: {
+    getFilteredProducts(): Product[] {
+      const filtered = this.filteredProducts;
+
+      this.totalPages = Math.max(
+        Math.ceil(filtered.length / ITEM_PER_PAGE),
+        1
+      );
+      this.currentPage = Math.min(this.currentPage, this.totalPages);
+
+      return paginateProducts(this.currentPage, filtered);
+    },
+
+    async fetchProducts(): Promise<void> {
       try {
-        this.products = await fetchProductsFromServer()
+        this.products = await fetchProductsFromServer();
+
+        const filterStore = useFilterStore();
+        if (!filterStore.priceRange) {
+          filterStore.setPriceRange(
+            this.defaultMinPrice,
+            this.defaultMaxPrice
+          );
+        }
       } catch (error) {
-        console.error('Error fetching products from server, falling back to local data.', error)
-        this.products = products
+        console.error('Failed to fetch products:', error);
+
+        this.products = products;
       }
-      finally {
-        this.totalPages = Math.ceil(this.products.length / ITEM_PER_PAGE)
-      }
+    },
+
+    setSearchTerm(term: string): void {
+      this.searchTerm = term;
+      this.currentPage = 1;
+    },
+
+    resetPagination(): void {
+      this.currentPage = 1;
     }
   }
-})
+});

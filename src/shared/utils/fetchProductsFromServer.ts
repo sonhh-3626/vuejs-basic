@@ -1,11 +1,28 @@
+import type { Product } from '@/shared/types/Product';
 import axios from 'axios';
-import type { Product } from '../types/Product';
+import { http } from '../api/http';
 
 export async function fetchProductsFromServer(): Promise<Product[]> {
-  const response = await axios.get(`http://localhost:3000/products`);
-  if (response.status !== 200) {
-    throw new Error('Failed to fetch products from server');
+  try {
+    const { data } = await http.get<Product[]>('/products');
+
+    if (!Array.isArray(data)) {
+      console.error('Invalid products response:', data);
+      return [];
+    }
+
+    return data;
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.error(
+        '[fetchProductsFromServer]',
+        error.response?.status,
+        error.message
+      );
+    } else {
+      console.error('[fetchProductsFromServer]', error);
+    }
+
+    throw error;
   }
-  const data: Product[] = response.data;
-  return data;
 }

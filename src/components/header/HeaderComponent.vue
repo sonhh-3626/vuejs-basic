@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang='ts'>
 import './HeaderComponent.css';
 import AppLogo from '../common/logo/AppLogo.vue';
 import SearchBox from '../common/search/SearchBox.vue';

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang='ts'>
 import SortBy from './SortBy.vue';
 import SortItemPerPage from './SortItemPerPage.vue';
 </script>

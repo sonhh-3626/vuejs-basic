@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup lang='ts'>
 import { MagnifyingGlassIcon, XMarkIcon } from '@heroicons/vue/16/solid'
 import { storeToRefs } from 'pinia'
 import { useRoute, useRouter } from 'vue-router'

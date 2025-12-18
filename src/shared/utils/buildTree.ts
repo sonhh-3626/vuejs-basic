@@ -1,7 +1,7 @@
 export interface CategoryItem {
   id: number;
   title: string;
-  amount: number;
+  count: number;
   parentId?: number | null;
   children?: CategoryItem[];
 }
